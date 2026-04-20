@@ -1,11 +1,8 @@
 import { defineData } from '@aws-amplify/backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-const schema = `# This "input" configures a global authorization rule to enable public access to
-# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
-
-type Transaction @model {
+const schema = `
+type Transaction @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner, operations: [create, read, update, delete] }]) {
   id: ID!
   description: String!
   amount: Float!
@@ -21,7 +18,7 @@ enum TransactionType {
   EXPENSE
 }
 
-type Budget @model {
+type Budget @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner, operations: [create, read, update, delete] }]) {
   id: ID!
   category: String!
   limit: Float!
@@ -29,7 +26,7 @@ type Budget @model {
   owner: String
 }
 
-type FinancialSummary @model {
+type FinancialSummary @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner, operations: [create, read, update, delete] }]) {
   id: ID!
   totalIncome: Float!
   totalExpenses: Float!
@@ -38,32 +35,31 @@ type FinancialSummary @model {
   owner: String
 }
 
-# Custom query to calculate financial summary using Lambda
-type CalculatedSummary @aws_api_key {
-  totalIncome: Float!
-  totalExpenses: Float!
-  balance: Float!
-  savingsRate: Float!
+type CalculatedSummary {
+  totalIncome: Float! @auth(rules: [{ allow: public }])
+  totalExpenses: Float! @auth(rules: [{ allow: public }])
+  balance: Float! @auth(rules: [{ allow: public }])
+  savingsRate: Float! @auth(rules: [{ allow: public }])
 }
 
-type NotificationResult @aws_api_key {
-  success: Boolean!
-  message: String!
+type NotificationResult {
+  success: Boolean! @auth(rules: [{ allow: public }])
+  message: String! @auth(rules: [{ allow: public }])
 }
 
-type TransactionConnection @aws_api_key {
-  items: [Transaction]
-  nextToken: String
+type TransactionConnection {
+  items: [Transaction] @auth(rules: [{ allow: public }])
+  nextToken: String @auth(rules: [{ allow: public }])
 }
 
 type Query {
-  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
-  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
+  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackerfinal82393814-\${branchName}") @auth(rules: [{ allow: public }])
+  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection @auth(rules: [{ allow: public }])
 }
 
 type Mutation {
-  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
-  sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
+  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackerfinal82393814-\${branchName}") @auth(rules: [{ allow: public }])
+  sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult @function(name: "financetrackerfinal82393814-\${branchName}") @auth(rules: [{ allow: public }])
 }
 `;
 
