@@ -54,7 +54,7 @@ type TransactionConnection {
 
 type Query {
   calculateFinancialSummary: CalculatedSummary @function(name: "${branchName}") @auth(rules: [{ allow: public }])
-  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection @auth(rules: [{ allow: public }])
+  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
 }
 
 type Mutation {
