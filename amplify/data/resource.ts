@@ -1,5 +1,6 @@
 import { defineData } from '@aws-amplify/backend';
 
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `
 type Transaction @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner, operations: [create, read, update, delete] }]) {
   id: ID!
@@ -52,20 +53,19 @@ type TransactionConnection {
 }
 
 type Query {
-  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
+  calculateFinancialSummary: CalculatedSummary @function(name: "${branchName}") @auth(rules: [{ allow: public }])
   getTransactionsByCategory(category: String!, limit: Int): TransactionConnection @auth(rules: [{ allow: public }])
 }
 
 type Mutation {
-  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
-  sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
+  sendMonthlyReport(email: String!): NotificationResult @function(name: "${branchName}") @auth(rules: [{ allow: public }])
+  sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult @function(name: "${branchName}") @auth(rules: [{ allow: public }])
 }
 `;
 
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'main',
       modelNameToTableNameMapping: {
         Transaction: 'Transaction-b76n3e3ffbgc3c6wt523ogdwve-main',
