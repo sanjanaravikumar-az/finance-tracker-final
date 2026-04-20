@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { signIn, signOut, getCurrentUser, signUp, confirmSignUp } from 'aws-amplify/auth';
 import { uploadData, getUrl } from 'aws-amplify/storage';
 import { listTransactions, calculateFinancialSummary, getTransactionsByCategory } from './graphql/queries';
 import { createTransaction, sendMonthlyReport, sendBudgetAlert } from './graphql/mutations';
 import { TransactionType } from './API';
-import amplifyconfig from '../amplify_outputs.json';
 import './App.css';
 
-Amplify.configure(amplifyconfig);
 const client = generateClient({ authMode: 'apiKey' });
 
 interface Transaction {
