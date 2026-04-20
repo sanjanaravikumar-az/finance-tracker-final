@@ -7,7 +7,7 @@ import amplifyconfig from '../amplify_outputs.json';
 import './App.css';
 
 Amplify.configure(amplifyconfig);
-const client = generateClient();
+const client = generateClient({ authMode: 'apiKey' });
 
 // GraphQL queries and mutations
 const listTransactions = /* GraphQL */ `
