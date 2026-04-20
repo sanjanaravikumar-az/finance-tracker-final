@@ -5,25 +5,28 @@ import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 const branchName = process.env.AWS_BRANCH ?? "sandbox";
 const projectName = "financetrackerfinal";
 export class cdkStack extends Construct {
+    public readonly budgetAlertTopic: sns.Topic;
+    public readonly monthlyReportTopic: sns.Topic;
+
     constructor(scope: Construct, id: string) {
         super(scope, id);
         // 1. SNS Topic for Budget Alerts
-        const budgetAlertTopic = new sns.Topic(this, 'BudgetAlertTopic', {
+        this.budgetAlertTopic = new sns.Topic(this, 'BudgetAlertTopic', {
             displayName: 'Fin Tracker Budget Alerts',
         });
-        budgetAlertTopic.addSubscription(new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com'));
+        this.budgetAlertTopic.addSubscription(new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com'));
         new cdk.CfnOutput(this, 'BudgetAlertTopicArn', {
-            value: budgetAlertTopic.topicArn,
+            value: this.budgetAlertTopic.topicArn,
             description: 'SNS Topic ARN for budget alerts',
             exportName: `${projectName}-BudgetAlertTopicArn-${branchName}`,
         });
         // 2. SNS Topic for Monthly Reports
-        const monthlyReportTopic = new sns.Topic(this, 'MonthlyReportTopic', {
+        this.monthlyReportTopic = new sns.Topic(this, 'MonthlyReportTopic', {
             displayName: 'Finance Tracker Monthly Reports',
         });
-        monthlyReportTopic.addSubscription(new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com'));
+        this.monthlyReportTopic.addSubscription(new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com'));
         new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
-            value: monthlyReportTopic.topicArn,
+            value: this.monthlyReportTopic.topicArn,
             description: 'SNS Topic ARN for monthly reports',
             exportName: `${projectName}-MonthlyReportTopicArn-${branchName}`,
         });
