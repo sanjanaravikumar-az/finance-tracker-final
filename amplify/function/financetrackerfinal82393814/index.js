@@ -6,9 +6,10 @@
 	MONTHLY_REPORT_TOPIC_ARN
 	ENV
 	REGION
-Amplify Params - DO NOT EDIT */ const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
-const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
+Amplify Params - DO NOT EDIT */
+import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 
 const dynamoClient = new DynamoDBClient({});
 const dynamodb = DynamoDBDocumentClient.from(dynamoClient);
@@ -18,7 +19,7 @@ const sns = new SNSClient({});
  * AppSync GraphQL resolver for calculating financial summary and sending notifications
  * @type {import('@types/aws-lambda').AppSyncResolverHandler}
  */
-exports.handler = async (event) => {
+export const handler = async (event) => {
   console.log(`EVENT: ${JSON.stringify(event, null, 2)}`);
 
   // AppSync passes fieldName in event.info.fieldName
