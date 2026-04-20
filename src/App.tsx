@@ -225,7 +225,7 @@ function App() {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const result: any = await client.graphql({ query: listTransactions });
+      const result: any = await client.graphql({ query: listTransactions, authMode: 'apiKey' });
       setTransactions(result.data.listTransactions.items);
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -317,6 +317,7 @@ function App() {
       const result: any = await client.graphql({
         query: getTransactionsByCategoryQuery,
         variables: { category: filterCategory, limit: 50 },
+        authMode: 'apiKey'
       });
       setFilteredTransactions(result.data.getTransactionsByCategory.items || []);
       setShowFiltered(true);

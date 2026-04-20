@@ -462,10 +462,12 @@ to custom return types:
 
 #### 5. Frontend `App.tsx`: Add `authMode: 'apiKey'` to GraphQL Calls
 
-In `src/App.tsx`, add `authMode: 'apiKey'` to all Lambda-backed `client.graphql()` calls.
-When a user is signed in, the Amplify client defaults to Cognito auth, but the schema
-uses API key as the default auth mode (matching Gen1). Without this, signed-in users get
-"Not Authorized" errors on custom operations.
+In `src/App.tsx`, add `authMode: 'apiKey'` to all `client.graphql()` calls that run while
+a user is signed in. When a user is signed in, the Amplify client defaults to Cognito auth,
+but the schema uses API key as the default auth mode (matching Gen1). Without this,
+signed-in users get "Not Authorized" errors.
+
+This applies to Lambda-backed operations AND model mutations like `createTransaction`:
 
 ```diff
  const result: any = await client.graphql({
@@ -483,8 +485,17 @@ uses API key as the default auth mode (matching Gen1). Without this, signed-in u
  });
 ```
 
-Apply to all Lambda-backed operations: `calculateFinancialSummary`, `sendMonthlyReport`,
-`sendBudgetAlert`.
+```diff
+ await client.graphql({
+   query: createTransaction,
+-  variables: { input },
++  variables: { input },
++  authMode: 'apiKey'
+ });
+```
+
+Apply to all Lambda-backed operations (`calculateFinancialSummary`, `sendMonthlyReport`,
+`sendBudgetAlert`) and model mutations (`createTransaction`).
 
 #### 6. Fix Custom Resolver Circular Dependency
 
@@ -520,6 +531,46 @@ backend.financetrackere30b1453.resources.lambda.addToRolePolicy(
     resources: ['*'],
   })
 );
+```
+
+#### 8. Wire SNS Topic ARNs to Lambda Environment Variables
+
+The migration tool doesn't carry over custom CDK resource outputs as Lambda environment
+variables. The Lambda reads `BUDGET_ALERT_TOPIC_ARN` and `MONTHLY_REPORT_TOPIC_ARN` from
+`process.env`, but Gen 2's `backend.ts` doesn't set them.
+
+First, expose the topics as public properties in `amplify/custom/financereport/resource.ts`:
+
+```diff
+ export class cdkStack extends Construct {
++    public readonly budgetAlertTopic: sns.Topic;
++    public readonly monthlyReportTopic: sns.Topic;
++
+     constructor(scope: Construct, id: string) {
+         super(scope, id);
+-        const budgetAlertTopic = new sns.Topic(this, 'BudgetAlertTopic', { ... });
++        this.budgetAlertTopic = new sns.Topic(this, 'BudgetAlertTopic', { ... });
+         ...
+-        const monthlyReportTopic = new sns.Topic(this, 'MonthlyReportTopic', { ... });
++        this.monthlyReportTopic = new sns.Topic(this, 'MonthlyReportTopic', { ... });
+```
+
+Then in `amplify/backend.ts`, capture the instance and add the environment variables:
+
+```diff
+-new financereport_cdkStack(
++const financereport = new financereport_cdkStack(
+   backend.createStack('financereport'),
+   'financereport'
+ );
++backend.financetrackerfinal82393814.addEnvironment(
++  'BUDGET_ALERT_TOPIC_ARN',
++  financereport.budgetAlertTopic.topicArn
++);
++backend.financetrackerfinal82393814.addEnvironment(
++  'MONTHLY_REPORT_TOPIC_ARN',
++  financereport.monthlyReportTopic.topicArn
++);
 ```
 
 ---
