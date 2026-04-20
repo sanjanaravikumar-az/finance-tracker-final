@@ -294,6 +294,18 @@ You can access the following resource attributes as environment variables from y
         API_FINANCETRACKER_TRANSACTIONTABLE_NAME
 ? Do you want to edit the local lambda function now? No
 ```
+
+## Configure
+
+```console
+npm run configure
+```
+## Deploy Backend
+
+```console
+amplify push
+```
+
 ```console
 ┌──────────┬──────────────────────────┬───────────┬───────────────────┐
 │ Category │ Resource name            │ Operation │ Provider plugin   │

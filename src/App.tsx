@@ -272,6 +272,7 @@ function App() {
       await client.graphql({
         query: createTransaction,
         variables: { input },
+        authMode: 'apiKey'
       });
 
       // Reset form
