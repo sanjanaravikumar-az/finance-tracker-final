@@ -37,10 +37,14 @@ userPool.addClient('NativeAppClient', {
 });
 const dataStack = backend.data.resources.cfnResources.cfnGraphqlApi.stack;
 new cdkStack(dataStack, 'customresolver', backend);
-new financereport_cdkStack(
+const financeCustom = new financereport_cdkStack(
   backend.createStack('financereport'),
   'financereport'
 );
+
+backend.financetrackerfinal82393814.addEnvironment('MONTHLY_REPORT_TOPIC_ARN', financeCustom.monthlyReportTopic.topicArn);
+backend.financetrackerfinal82393814.addEnvironment('BUDGET_ALERT_TOPIC_ARN', financeCustom.budgetAlertTopic.topicArn);
+
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.financetrackerfinal82393814.resources.cfnResources.cfnFunction.functionName = `financetrackerfinal82393814-${branchName}`;
 backend.financetrackerfinal82393814.addEnvironment(
