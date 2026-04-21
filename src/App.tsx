@@ -7,7 +7,8 @@ import { createTransaction, sendMonthlyReport, sendBudgetAlert } from './graphql
 import { TransactionType } from './API';
 import './App.css';
 
-const client = generateClient({ authMode: 'apiKey' });
+const authenticatedClient = generateClient({ authMode: 'userPool' });
+const publicClient = generateClient({ authMode: 'apiKey' });
 
 interface Transaction {
   id: string;
@@ -92,7 +93,7 @@ function App() {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const result: any = await client.graphql({ query: listTransactions });
+      const result: any = await publicClient.graphql({ query: listTransactions });
       setTransactions(result.data.listTransactions.items);
     } catch (error) { console.error('Error fetching transactions:', error); }
     finally { setLoading(false); }
@@ -110,7 +111,7 @@ function App() {
         const urlResult = await getUrl({ path: fileName });
         receiptUrl = urlResult.url.toString();
       }
-      await client.graphql({
+      await authenticatedClient.graphql({
         query: createTransaction,
         variables: { input: { description, amount: parseFloat(amount), type, category, date: new Date().toISOString(), receiptUrl: receiptUrl || undefined } },
       });
@@ -122,7 +123,7 @@ function App() {
 
   const calculateSummaryFn = async () => {
     try {
-      const result: any = await client.graphql({ query: calculateFinancialSummary });
+      const result: any = await publicClient.graphql({ query: calculateFinancialSummary });
       setSummary(result.data.calculateFinancialSummary);
     } catch (error) { console.error('Error calculating summary:', error); }
   };
@@ -131,7 +132,7 @@ function App() {
     if (!filterCategory.trim()) { setShowFiltered(false); return; }
     try {
       setLoading(true);
-      const result: any = await client.graphql({ query: getTransactionsByCategory, variables: { category: filterCategory, limit: 50 } });
+      const result: any = await publicClient.graphql({ query: getTransactionsByCategory, variables: { category: filterCategory, limit: 50 } });
       setFilteredTransactions(result.data.getTransactionsByCategory.items || []);
       setShowFiltered(true);
     } catch (error) { console.error('Error filtering:', error); alert('Failed to filter transactions'); }
@@ -145,7 +146,7 @@ function App() {
     try {
       setLoading(true);
       const userEmail = user.signInDetails?.loginId || email;
-      const result: any = await client.graphql({ query: sendMonthlyReport, variables: { email: userEmail } });
+      const result: any = await publicClient.graphql({ query: sendMonthlyReport, variables: { email: userEmail } });
       if (result.data.sendMonthlyReport.success) alert('✅ Monthly report sent!');
       else alert('❌ ' + result.data.sendMonthlyReport.message);
     } catch (error: any) { alert('Failed to send report: ' + (error.errors?.[0]?.message || error.message)); }
@@ -163,7 +164,7 @@ function App() {
     try {
       setLoading(true);
       const userEmail = user.signInDetails?.loginId || email;
-      const result: any = await client.graphql({ query: sendBudgetAlert, variables: { email: userEmail, category: alertCategory, exceeded } });
+      const result: any = await publicClient.graphql({ query: sendBudgetAlert, variables: { email: userEmail, category: alertCategory, exceeded } });
       if (result.data.sendBudgetAlert.success) alert('✅ Budget alert sent!');
       else alert('❌ ' + result.data.sendBudgetAlert.message);
     } catch (error: any) { alert('Failed to send alert: ' + (error.errors?.[0]?.message || error.message)); }
