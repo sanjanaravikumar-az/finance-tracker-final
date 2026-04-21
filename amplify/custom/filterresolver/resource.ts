@@ -12,7 +12,7 @@ export class cdkStack extends Construct {
         // Create IAM role for the DynamoDB data source
         const dataSourceRole = new iam.Role(this, 'TransactionsByCategoryDSRole', {
             assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
-            roleName: `TransByCatDSRole-${branchName}`,
+            roleName: `TransByCatRole-${branchName}`,
         });
         // Grant DynamoDB access to the role
         dataSourceRole.addToPolicy(new iam.PolicyStatement({
