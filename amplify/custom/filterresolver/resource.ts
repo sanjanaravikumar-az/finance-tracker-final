@@ -29,7 +29,7 @@ export class cdkStack extends Construct {
         // Using Gen1 CfnDataSource pattern (low-level CloudFormation)
         const dataSource = new cdk.aws_appsync.CfnDataSource(this, 'TransactionsByCategoryDS', {
             apiId: apiId,
-            name: 'TransactionsByCategoryDataSource',
+            name: 'TransByCategoryDS',
             type: 'AMAZON_DYNAMODB',
             dynamoDbConfig: {
                 tableName: cdk.Fn.sub('Transaction-${apiId}-${env}', {
