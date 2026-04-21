@@ -53,13 +53,13 @@ type TransactionConnection {
 }
 
 type Query {
-  calculateFinancialSummary: CalculatedSummary @function(name: "${branchName}") @auth(rules: [{ allow: public }])
+  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
   getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
 }
 
 type Mutation {
-  sendMonthlyReport(email: String!): NotificationResult @function(name: "${branchName}") @auth(rules: [{ allow: public }])
-  sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult @function(name: "${branchName}") @auth(rules: [{ allow: public }])
+  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
+  sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
 }
 `;
 
