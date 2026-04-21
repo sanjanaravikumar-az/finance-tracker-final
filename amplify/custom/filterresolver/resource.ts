@@ -12,7 +12,7 @@ export class cdkStack extends Construct {
         // Create IAM role for the DynamoDB data source
         const dataSourceRole = new iam.Role(this, 'TransactionsByCategoryDSRole', {
             assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
-            roleName: `TransByCatRole-${branchName}`,
+            roleName: `TransByCatDSRole-${branchName}`,
         });
         // Grant DynamoDB access to the role
         dataSourceRole.addToPolicy(new iam.PolicyStatement({
@@ -29,7 +29,7 @@ export class cdkStack extends Construct {
         // Using Gen1 CfnDataSource pattern (low-level CloudFormation)
         const dataSource = new cdk.aws_appsync.CfnDataSource(this, 'TransactionsByCategoryDS', {
             apiId: apiId,
-            name: 'TransByCategoryDS',
+            name: 'TransactionsByCategoryDataSource',
             type: 'AMAZON_DYNAMODB',
             dynamoDbConfig: {
                 tableName: cdk.Fn.sub('Transaction-${apiId}-${env}', {
