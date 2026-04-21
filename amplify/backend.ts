@@ -35,8 +35,8 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
-const dataStack = backend.data.resources.cfnResources.cfnGraphqlApi.stack;
-new cdkStack(dataStack, 'customresolver', backend);
+
+new cdkStack(backend.createStack('filterresolver'), 'filterresolver', backend);
 const financeCustom = new financereport_cdkStack(
   backend.createStack('financereport'),
   'financereport'

@@ -47,14 +47,9 @@ type NotificationResult {
   message: String! @auth(rules: [{ allow: public }])
 }
 
-type TransactionConnection {
-  items: [Transaction] @auth(rules: [{ allow: public }])
-  nextToken: String @auth(rules: [{ allow: public }])
-}
 
 type Query {
   calculateFinancialSummary: CalculatedSummary @function(name: "financetrackerfinal82393814-${branchName}") @auth(rules: [{ allow: public }])
-  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
 }
 
 type Mutation {
